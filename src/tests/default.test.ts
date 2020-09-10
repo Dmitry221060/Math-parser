@@ -1,11 +1,12 @@
 import { expect } from 'chai';
 
 import Calculator from '../models/calculator';
+import { CalculationResult, ValidationException } from '../models/expression/defs';
 
 describe('Calculator', () => {
   const calculator = new Calculator();
 
-  describe('.run', () => {
+  describe('.run valid cases', () => {
     let rawString: string,
       result: number | null;
 
@@ -21,20 +22,26 @@ describe('Calculator', () => {
       expect(result).to.be.equal( 2 + 2 );
     });
 
+    it('doesn\'t care about spacing', () => {
+      rawString = '2 3 / 2 . 3 ';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( 23 / 2.3 );
+    });
+
     it('can sum two int', () => {
       rawString = '5 + 3';
       result = calculator.run(rawString).answer;
       expect(result).to.be.equal( 5 + 3 );
     });
-
-    it('can\'t see the difference between dot and semicolon in floats', () => {
-      rawString = '5.2 + 3,3';
+    
+    it('can sum two float', () => {
+      rawString = '5.2 + 3.3';
       result = calculator.run(rawString).answer;
       expect(result).to.be.equal( 5.2 + 3.3 );
     });
 
-    it('can sum two float', () => {
-      rawString = '5.2 + 3.3';
+    it('can\'t see the difference between dot and comma in floats', () => {
+      rawString = '5.2 + 3,3';
       result = calculator.run(rawString).answer;
       expect(result).to.be.equal( 5.2 + 3.3 );
     });
@@ -225,6 +232,12 @@ describe('Calculator', () => {
       expect(result).to.be.equal( (0.5 + 2) );
     });
 
+    it('autcloses the open brackets', () => {
+      rawString = '8 - (2 * (2 + 2';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( 8 - (2 * (2 + 2)) );
+    });
+
     it('multiplies the number by bracket if operator is missing', () => {
       rawString = '2(2 + 2)';
       result = calculator.run(rawString).answer;
@@ -247,6 +260,151 @@ describe('Calculator', () => {
       rawString = '(2 + 2)(7 - 3)';
       result = calculator.run(rawString).answer;
       expect(result).to.be.equal( (2 + 2) * (7 - 3) );
+    });
+  });
+
+  describe('.run invalid cases', () => {
+    let rawString: string,
+      result: CalculationResult;
+
+    it('fails at empty input', () => {
+      rawString = '';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at empty layers', () => {
+      rawString = '()';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at empty layers', () => {
+      rawString = '5()';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at empty layers', () => {
+      rawString = '(()())(())';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at fake non-empty input', () => {
+      rawString = '         ';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at non-string call', () => {
+      // @ts-expect-error
+      result = calculator.run(15);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at unknown characters input', () => {
+      rawString = '2 + 2 - x';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at unknown characters input', () => {
+      rawString = '2 + 2 = 4';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails at operator-only input', () => {
+      rawString = '-';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at operator-only input', () => {
+      rawString = '*';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at fake float number', () => {
+      rawString = '8.';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+
+    it('fails at fake float number', () => {
+      rawString = '8.8.4.4';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails at layer started with operator which can\'t be a part of number', () => {
+      rawString = '* 2 + 2';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails at layer started with operator which can\'t be a part of number', () => {
+      rawString = '(* 2 + 2)';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails at trailing operator', () => {
+      rawString = '2 +';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails at trailing operator', () => {
+      rawString = '(2 + )';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails with excessive closing bracket', () => {
+      rawString = '(2 * (2 + 2)))';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails at multiply operators in a row', () => {
+      rawString = '2 + -2';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails when operator rejects arguments', () => {
+      rawString = '2 / 0';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
+    });
+    
+    it('fails at division by zero', () => {
+      rawString = '2 / 0';
+      result = calculator.run(rawString);
+      expect(result.error).to.be.instanceof(ValidationException);
+      expect(result.answer).to.be.null;
     });
   });
 });
