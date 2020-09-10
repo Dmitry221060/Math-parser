@@ -63,10 +63,22 @@ describe('Calculator', () => {
       expect(result).to.be.equal( 5 + 3.3 + 14 + 9.1 + 7.7 );
     });
 
-    it('returns the entered number if no operation was specified', () => {
+    it('understands a single number', () => {
       rawString = '5.2';
       result = calculator.run(rawString).answer;
       expect(result).to.be.equal( 5.2 );
+    });
+
+    it('understands a single number with it sign', () => {
+      rawString = '+5.2';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( +5.2 );
+    });
+
+    it('understands a single number with it sign', () => {
+      rawString = '-5.2';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( -5.2 );
     });
 
     it('can substract two int', () => {
@@ -139,6 +151,102 @@ describe('Calculator', () => {
       rawString = '2 + 2 / 2';
       result = calculator.run(rawString).answer;
       expect(result).to.be.equal( 2 + 2 / 2 );
+    });
+
+    it('can parse brackets', () => {
+      rawString = '(2 + 2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (2 + 2) );
+    });
+
+    it('сalculates value in brackets before subtracting', () => {
+      rawString = '1 - (2 + 3)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( 1 - (2 + 3) );
+    });
+
+    it('сalculates value in brackets before multiplication', () => {
+      rawString = '2 * (2 + 2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( 2 * (2 + 2) );
+    });
+
+    it('can parse brackets in the middle of expression', () => {
+      rawString = '2 - (2 + 2) * 2';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( 2 - (2 + 2) * 2 );
+    });
+
+    it('can parse nested brackets', () => {
+      rawString = '2 + (2 - (2 + 2))';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( 2 + (2 - (2 + 2)) );
+    });
+
+    it('can parse brackets around single number', () => {
+      rawString = '(2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (2) );
+    });
+
+    it('can parse brackets around single number', () => {
+      rawString = '(-2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (-2) );
+    });
+
+    it('can parse sign in front of brackets', () => {
+      rawString = '-(2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( -(2) );
+    });
+
+    it('can parse meaningless brackets', () => {
+      rawString = '((((2 + 2))) - 2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( ((((2 + 2))) - 2) );
+    });
+
+    it('doesn\'t break the order of operations in brackets', () => {
+      rawString = '(2 + 2 * 2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (2 + 2 * 2) );
+    });
+
+    it('can apply operator to two brackets', () => {
+      rawString = '(2 + 2) - (1 + 2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (2 + 2) - (1 + 2) );
+    });
+
+    it('can parse float in dot notation next to open bracket', () => {
+      rawString = '(.5 + 2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (0.5 + 2) );
+    });
+
+    it('multiplies the number by bracket if operator is missing', () => {
+      rawString = '2(2 + 2)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( 2 * (2 + 2) );
+    });
+
+    it('multiplies the bracket by number if operator is missing', () => {
+      rawString = '(2 + 2)2';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (2 + 2) * 2 );
+    });
+
+    it('multiplies the bracket by float in dot notation if operator is missing', () => {
+      rawString = '(2 + 2).2';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (2 + 2) * 0.2 );
+    });
+
+    it('multiplies two bracket if operator is missing', () => {
+      rawString = '(2 + 2)(7 - 3)';
+      result = calculator.run(rawString).answer;
+      expect(result).to.be.equal( (2 + 2) * (7 - 3) );
     });
   });
 });
