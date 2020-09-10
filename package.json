@@ -1,6 +1,6 @@
 {
   "name": "math-parser",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Simple NodeJS parser for math expressions",
   "main": "dist/index.js",
   "scripts": {
