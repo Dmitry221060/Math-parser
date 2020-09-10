@@ -1,3 +1,5 @@
+const DEBUG = process.env.DEBUG || false;
+
 interface ILogger {
   info(message: any, ...data: any[]): void;
   error(message: any, ...data: any[]): void;
@@ -14,6 +16,7 @@ class Logger implements ILogger {
   }
 
   public debug(message: any, ...data: any[]) {
+    if (!DEBUG) return;
     console.log('[debug]', message, ...data);
   }
 }

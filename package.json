@@ -4,14 +4,15 @@
   "description": "Simple NodeJS parser for math expressions",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node .",
     "build": "yarn build:server && yarn build:client",
+    "build:server": "yarn clean && tsc",
     "build:client": "parcel build src/client/index.html --public-url /static --out-dir dist/client",
-    "build:server": "tsc",
+    "clean": "rm -rf dist",
     "dev": "yarn build && yarn start",
-    "test": "yarn build:server && npx mocha dist/tests/*.test.js",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "start": "node .",
+    "test": "yarn build:server && npx mocha dist/tests/*.test.js"
   },
   "author": "Dmitry221060 <ya.dima42103ya@yandex.ru>",
   "license": "MIT",

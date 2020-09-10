@@ -1,6 +1,6 @@
 import ICalculator from './defs';
 import IParser from '../parsers/defs';
-import { CalculationResult } from '../expression/defs';
+import { CalculationResult, ICalculationResult, ValidationException } from '../expression/defs';
 
 import DefaultParser from '../parsers';
 
@@ -11,7 +11,10 @@ class Calculator implements ICalculator {
     this.parser = parser;
   }
 
-  public run(raw: string): CalculationResult {
+  public run(raw: string): ICalculationResult {
+    if (!raw || typeof raw !== 'string')
+      return new CalculationResult(new ValidationException('Expression should be non-empty string'));
+
     const parseResult = this.parser.parse(raw);
     if (parseResult.error) return new CalculationResult(parseResult.error);
     if (!parseResult.expression)

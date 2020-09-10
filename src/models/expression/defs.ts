@@ -48,11 +48,11 @@ export class Entity implements IEntity {
   }
 }
 
-export interface IOperator {
+export interface IOperator extends IEntity {
   priority: number;
   mightBePartOfNumber: boolean;
   execute(a: number, b: number): number;
-  FPM(unsafe: number): string;
+  FPMCorrection(unsafe: number): string;
 }
 
 export class Operator extends Entity implements IOperator {
@@ -72,7 +72,7 @@ export class Operator extends Entity implements IOperator {
     this.mightBePartOfNumber = mightBePartOfNumber;
   }
 
-  public FPM(unsafe: number): string {
+  public FPMCorrection(unsafe: number): string {
     return parseFloat( unsafe.toFixed(12) ).toString();
   }
 }

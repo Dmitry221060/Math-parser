@@ -1,4 +1,4 @@
-import Expression from '../expression';
+import IExpression from '../expression/defs';
 
 export default interface IParser {
   parse(raw: string): IParsingResult;
@@ -6,14 +6,14 @@ export default interface IParser {
 
 export interface IParsingResult {
   error: null | Error;
-  expression: null | Expression;
+  expression: null | IExpression;
 }
 
 export class ParsingResult implements IParsingResult {
   public error: null | Error;
-  public expression: null | Expression;
+  public expression: null | IExpression;
 
-  public constructor(error: null | Error, expression: null | Expression = null) {
+  public constructor(error: null | Error, expression: null | IExpression = null) {
     this.error = error;
     this.expression = expression;
     return this;
