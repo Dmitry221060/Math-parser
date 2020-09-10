@@ -1,0 +1,55 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #eee;
+}
+
+.wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  background: #aaa;
+  border: 1px solid black;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+}
+
+input.expression {
+  margin: 30px auto 45px;
+  display: block;
+  box-sizing: border-box;
+  width: 50%;
+  transform: scale(2);
+}
+
+input.submit {
+  margin: 45px auto 10px;
+  display: block;
+  transform: scale(2);
+}
+
+p.header, .result {
+  font-size: 1.5em;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: #101;
+}
+
+.result {
+  max-width: fit-content;
+  display: hidden;
+  margin: 0 auto;
+}
+
+.error {
+  color: #f00;
+}
