@@ -27,7 +27,7 @@ function submitExpression() {
 }
 
 const errors = {
-  validation: () => `Validation error! Make sure that your input is correct and meets <a href="${GITHUB_REPO_URL}/blob/master/README.md#expressions-formatting">calculator rules</a>.`,
+  validation: () => `Validation error! Make sure that your input is correct and meets <a href="${GITHUB_REPO_URL}/blob/master/README.md#formatting-expressions">calculator rules</a>.`,
   internal: () => `Internal error! This should not happen, please <a href="${generateIssueURL()}">create Issue on GitHub</a>.`,
   unknown: () => 'Oh no, an unknown error has occurred! Most likely it is not related to the parser, check your network connection and try again later.',
 };
