@@ -25,7 +25,7 @@ app.post('/calculate', (req, res) => {
 
   if (result.answer === null) return res.status(500).end('Internal error');
 
-  res.status(200).end(result.answer.toString());
+  return res.status(200).end(result.answer.toString());
 });
 
 export default app;
